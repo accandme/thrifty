@@ -177,7 +177,7 @@ internal class ServiceBuilder(
         val hasReturnType = returnTypeName != TypeName.VOID.box()
 
         val callBuilder = TypeSpec.classBuilder(name)
-                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                 .superclass(superclass)
 
         // Set up fields
@@ -185,7 +185,7 @@ internal class ServiceBuilder(
             val javaType = typeResolver.getJavaClass(field.type.trueType)
 
             callBuilder.addField(FieldSpec.builder(javaType, fieldNamer.getName(field))
-                    .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+                    .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                     .build())
         }
 
@@ -204,7 +204,7 @@ internal class ServiceBuilder(
     private fun buildCallCtor(method: ServiceMethod, callbackTypeName: TypeName): MethodSpec {
         val allocator = NameAllocator()
         val scope = AtomicInteger(0)
-        val ctor = MethodSpec.constructorBuilder()
+        val ctor = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC)
                 .addStatement(
                         "super(\$S, \$T.\$L, callback)",
                         method.name,
@@ -250,7 +250,7 @@ internal class ServiceBuilder(
     private fun buildSendMethod(method: ServiceMethod): MethodSpec {
         val send = MethodSpec.methodBuilder("send")
                 .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PROTECTED)
+                .addModifiers(Modifier.PUBLIC)
                 .addParameter(TypeNames.PROTOCOL, "protocol")
                 .addException(TypeNames.IO_EXCEPTION)
 
@@ -290,7 +290,7 @@ internal class ServiceBuilder(
     private fun buildReceiveMethod(method: ServiceMethod, hasReturnType: Boolean): MethodSpec {
         val recv = MethodSpec.methodBuilder("receive")
                 .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PROTECTED)
+                .addModifiers(Modifier.PUBLIC)
                 .addParameter(TypeNames.PROTOCOL, "protocol")
                 .addParameter(TypeNames.MESSAGE_METADATA, "metadata")
                 .addException(TypeNames.EXCEPTION)
